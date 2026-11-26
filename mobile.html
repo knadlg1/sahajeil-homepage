@@ -786,6 +786,30 @@ mark{background:none;color:var(--pt);padding:0}
 .stk::before{content:"✔";margin-right:5px;color:#f6d98f}
 .qdots{gap:2px}.qdots button{max-width:20px}.qdots button.on{max-width:34px}.qctl{margin-top:8px;gap:10px}.qctl button{width:30px;height:30px;font-size:17px}.qcnt{font-size:12px}.qcnt b{font-size:14px}.stk{padding:5px 9px;font-size:11px}.qstage blockquote>footer{gap:8px}
 
+/* 후기 스포트라이트 */
+#review .spot{position:relative;margin-top:14px;overflow:hidden;perspective:1700px;padding:8px 0}
+.spstage{position:relative;height:470px;transform-style:preserve-3d}
+.sc{position:absolute;left:50%;top:6px;bottom:6px;display:flex;flex-direction:column;padding:20px 22px;border-radius:22px;background:var(--card,#fffaf0);border:2px solid var(--line);box-shadow:0 26px 50px -26px rgba(40,30,10,.55);transition:transform .75s cubic-bezier(.2,.9,.25,1),opacity .6s,filter .6s,border-color .4s;cursor:pointer;overflow:hidden}
+.sc.on{border-color:var(--acc);cursor:default;box-shadow:0 30px 60px -24px rgba(40,30,10,.6),0 0 0 5px rgba(184,137,63,.15)}
+.sc header{display:flex;align-items:center;gap:9px;flex-wrap:wrap;flex:none}
+.sav{width:42px;height:42px;border-radius:50%;overflow:hidden;flex:none}.sav svg{display:block;width:100%;height:100%}
+.sc p{margin-top:14px;flex:1;min-height:0;font:400 15.5px/1.8 var(--sans);letter-spacing:-.01em;white-space:pre-line;overflow:hidden}
+.sc.on p{overflow-y:auto;padding-right:6px;-webkit-mask-image:linear-gradient(#000 88%,transparent);mask-image:linear-gradient(#000 88%,transparent)}
+.sc.on p::-webkit-scrollbar{width:5px}.sc.on p::-webkit-scrollbar-thumb{background:rgba(47,74,58,.3);border-radius:3px}
+.spn{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:10px;color:var(--main)}
+.spn button{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.8);color:var(--main);font:700 22px/1 var(--sans);cursor:pointer;transition:background .2s,transform .2s}.spn button:hover{background:#fff;transform:scale(1.08)}
+.spc{font:600 14px var(--sans);color:#8a8372;min-width:62px;text-align:center}.spc b{color:var(--main);font-weight:900;font-size:17px}
+
+  .spstage{height:400px}.sc{padding:15px 15px}.sav{width:34px;height:34px}.sc p{font-size:13.2px;line-height:1.72;margin-top:10px}
+  .spn{margin-top:6px;gap:10px}.spn button{width:34px;height:34px;font-size:19px}.spc{font-size:12px}.spc b{font-size:15px}
+
+@media (prefers-reduced-motion:reduce){.sc{transition:none}}
+/* 좋은 문장 형광펜 — 카드가 가운데로 오면 왼쪽에서 오른쪽으로 쓱 칠해져요 */
+.hl{color:inherit;font-weight:700;padding:0 2px;border-radius:2px;background:linear-gradient(transparent 52%,rgba(227,185,95,.7) 52%) no-repeat;background-size:100% 100%;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.sc.on .hl{animation:hlsweep 1s .55s cubic-bezier(.2,.8,.2,1) both}
+@keyframes hlsweep{from{background-size:0 100%}to{background-size:100% 100%}}
+@media (prefers-reduced-motion:reduce){.sc.on .hl{animation:none}}
+
 </style></head>
 <body>
 <div id="app"></div>
@@ -1329,55 +1353,46 @@ tutInit();
 $$('[data-bars] .col:not(.empty)').forEach(c => { const v = parseFloat((($('em', c) || {}).textContent || '').replace('%', '')); if (v) c.dataset.h = Math.max(6, (v - 60) / 40 * 100).toFixed(1); });
 { const f = $('.chartbox .fine'); if (f) f.innerHTML += ' 막대 높이는 비교를 쉽게 하려고 60% 이하 구간을 생략해 표시했습니다.'; }
 if (/[?&]nohdr/.test(location.search)) document.documentElement.classList.add("nohdr");   /* Wix 에서 상단바를 따로 고정할 때: ?nohdr=1 */
-/* 후기마다 다른 사람 그림자(실루엣) — 슬라이드가 켜질 때 떠오르는 애니메이션 */
+/* 후기 스포트라이트: 가운데 큰 카드 + 양옆 비스듬한 카드. 자동으로 넘어가고, 옆 카드를 누르거나 화살표·스와이프로 넘겨요 */
 (function () {
+  const sec = $('#review .w'), old = $('[data-qs]'); if (!sec || !old) return;
+  const R = DATA.reviews, N = R.length;
   const BODY = '<path d="M16 166C16 120 52 106 80 106s64 14 64 60z"/><rect x="69" y="88" width="22" height="24" rx="9"/><ellipse cx="80" cy="70" rx="25" ry="29"/>';
-  const AV = [
-    { bg: '#e4efe6', fg: '#2f4a3a', hair: '<path d="M52 70C47 36 113 34 108 70C105 54 96 49 80 49C64 49 55 54 52 70Z"/>' },                                                  // 짧은 머리
-    { bg: '#f6e8c9', fg: '#8a6526', hair: '<path d="M51 70C46 32 114 32 109 70L118 128C102 118 58 118 42 128Z" opacity=".96"/>' },                                        // 긴 머리
-    { bg: '#f4ddd3', fg: '#a8482f', hair: '<circle cx="80" cy="33" r="14"/><path d="M52 70C48 40 112 40 108 70C104 56 96 52 80 52C64 52 56 56 52 70Z"/>' },     // 올림머리
-    { bg: '#ece3d1', fg: '#6b4a2b', hair: '<path d="M52 70C48 38 112 38 108 70C104 56 96 51 80 51C64 51 56 56 52 70Z"/><path d="M104 58C134 54 140 98 120 112C128 86 118 72 104 70Z"/>' }, // 포니테일
-    { bg: '#dfeadf', fg: '#3d5f4a', hair: '<path d="M49 84C42 34 118 34 111 84L109 100C100 90 60 90 51 100Z"/>' },                                                        // 단발
-    { bg: '#f6e8c9', fg: '#a8482f', hair: '<circle cx="56" cy="52" r="14"/><circle cx="70" cy="40" r="15"/><circle cx="90" cy="39" r="15"/><circle cx="106" cy="50" r="14"/><circle cx="50" cy="70" r="12"/><circle cx="110" cy="70" r="12"/>' } // 곱슬
-    , { bg: '#e4efe6', fg: '#6b4a2b', hair: '<path d="M54 66C52 42 108 42 106 66C100 56 60 56 54 66Z"/>' }                                                                          // 아주 짧은 머리
-    , { bg: '#f4ddd3', fg: '#3d5f4a', hair: '<circle cx="80" cy="33" r="10"/><path d="M50 84C42 34 118 34 110 84C104 56 96 50 80 50C64 50 56 56 50 84Z"/>' }          // 반묶음
-  ];
-  /* 후기 출처 표시: 구글 · 네이버 로고 */
+  const HAIR = ['<path d="M52 70C47 36 113 34 108 70C105 54 96 49 80 49C64 49 55 54 52 70Z"/>', '<path d="M51 70C46 32 114 32 109 70L118 128C102 118 58 118 42 128Z"/>', '<circle cx="80" cy="33" r="14"/><path d="M52 70C48 40 112 40 108 70C104 56 96 52 80 52C64 52 56 56 52 70Z"/>', '<path d="M52 70C48 38 112 38 108 70C104 56 96 51 80 51C64 51 56 56 52 70Z"/><path d="M104 58C134 54 140 98 120 112C128 86 118 72 104 70Z"/>', '<path d="M49 84C42 34 118 34 111 84L109 100C100 90 60 90 51 100Z"/>', '<circle cx="56" cy="52" r="14"/><circle cx="70" cy="40" r="15"/><circle cx="90" cy="39" r="15"/><circle cx="106" cy="50" r="14"/><circle cx="50" cy="70" r="12"/><circle cx="110" cy="70" r="12"/>', '<path d="M54 66C52 42 108 42 106 66C100 56 60 56 54 66Z"/>', '<circle cx="80" cy="33" r="10"/><path d="M50 84C42 34 118 34 110 84C104 56 96 50 80 50C64 50 56 56 50 84Z"/>'];
+  const COL = ['#2f4a3a', '#a8482f', '#b8893f', '#6b4a2b', '#3d5f4a', '#8a6526', '#7a5a8a', '#3a5568'], BGS = ['#e4efe6', '#f6e8c9', '#f4ddd3', '#ece3d1', '#dfeadf'];
   const LOGO = {
     google: '<svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>',
     naver: '<svg viewBox="0 0 48 48" aria-hidden="true"><rect width="48" height="48" rx="10" fill="#03C75A"/><path fill="#fff" d="M14 12h7.2l6.6 9.7V12H34v24h-7.2l-6.6-9.7V36H14z"/></svg>'
   };
-  $$('.qstage blockquote').forEach((b, i) => {
-    const a = AV[i % AV.length], r = DATA.reviews[i] || {};
-    b.insertAdjacentHTML('afterbegin', `<div class="qav" aria-hidden="true" style="color:${a.fg}"><svg viewBox="0 0 160 160"><g class="fig" fill="currentColor" opacity=".16">${BODY}${a.hair}</g></svg></div>`);
-    if (r.src) b.querySelector('footer').innerHTML = `<span class="src src-${r.src}">${LOGO[r.src]}<b>${r.src === 'google' ? '구글' : '네이버 플레이스'}</b></span><em class="stk">실수강 후기</em>`;
-  });
-  /* 긴 후기는 몇 줄만 보여 주고 '더보기'로 펼쳐요 (펼치면 자동 넘김 잠시 멈춤) */
-  const stage = $('[data-qs]');
-  const fit = () => $$('.qstage blockquote > p').forEach(p => {
-    const b = p.parentElement; let btn = $('.qmore', b);
-    const was = b.classList.contains('open'); b.classList.remove('open');
-    const over = p.scrollHeight > p.clientHeight + 2; if (was) b.classList.add('open');
-    if (over && !btn) { btn = document.createElement('button'); btn.type = 'button'; btn.className = 'qmore'; btn.textContent = '더보기 ▾'; p.after(btn); }
-    if (btn) btn.hidden = !over && !was;
-  });
-  /* 후기가 많아서: 이전 · 다음 버튼과 현재 번호 */
-  const qd = $('[data-qd]');
-  if (qd) {
-    const dots = $$('button', qd), ctl = document.createElement('div'); ctl.className = 'qctl';
-    ctl.innerHTML = `<button type="button" class="qp" aria-label="이전 후기">‹</button><span class="qcnt"><b>1</b> / ${dots.length}</span><button type="button" class="qn" aria-label="다음 후기">›</button>`;
-    qd.after(ctl);
-    const cur = () => dots.findIndex(d => d.classList.contains('on'));
-    ctl.addEventListener('click', e => { const bt = e.target.closest('button'); if (!bt) return; const k = cur(), n = dots.length; dots[(bt.classList.contains('qn') ? k + 1 : k - 1 + n) % n].click(); });
-    new MutationObserver(() => { ctl.querySelector('.qcnt b').textContent = cur() + 1; }).observe(qd, { subtree: true, attributes: true, attributeFilter: ['class'] });
-  }
-  if (stage) {
-    stage.addEventListener('click', e => {
-      const m = e.target.closest('.qmore'); if (!m) return; const b = m.parentElement, open = b.classList.toggle('open');
-      m.textContent = open ? '접기 ▴' : '더보기 ▾'; stage.classList.toggle('hold', !!$('.qstage blockquote.open'));
+  /* 마음에 와닿는 문장은 형광펜으로 */
+  const HL = ["고민도 하지 않고 그 자리에서 바로 신청을 하였습니다","따뜻한 어머니의 마음으로 보듬어주시고","학원을 어디로 갈까 고민하고 계시다면 사하제일간호학원에서 시작하세요 강추합니다","취업성공률 좋아서 갔는데 진짜 취업도 빨리되고","합격 후 오래 기다리지 않고 취업까지 할 수 있었습니다","핵심을 콕콕 짚어주시고 이해하기 쉽게 가르쳐주셔서","중도 포기 없이 무사히 자격증을 손에 쥐게","밀착 케어","우수한 성적으로 합격하였습니다","만족100%","시험 당일에도 긴장하지 않고 문제를 너무 쉽게 잘 풀 수 있었습니다","선생님께서 포기하지말라고 꽉 잡아주셔서","지금은 정형외과의원에서 일하고있어요","가고 싶은 병원을 선택해서 가게 해줌","학생 관리를 체계적으로 해줌","여기 오길 잘했다는 생각이 계속 들어요","자격증 취득은 걱정 안해도 될정도","든든한 버팀목 같은 존재","사하제일 오길 잘한 것 같아용","후회없이 잘 공부한 1년이었습니다","자격증 취득과 취업까지 할 수 있어서 정말 만족합니다","원장선생님 믿고 등록하셔도 됩니다","끝까지 완주할 수 있게 큰 힘이 되어주셨습니다","시험에 나올 만한 중요한 부분 전부 짚어주셔서","상담도 진짜 형식적으로 해주시는 게 아니라","정확히 얘기해주는게 좋아서","이론과 실습이 균형 있게 진행되어","높은 수업 퀄리티","이력서와 면접 준비에도 도움을 주셨습니다","원장님이 너무 친절하게 설명해주시고 인간미있게 대해주셔서","학원 분위기도 밝고 편해서","학생의 입장에서 생각해주시는 세심함","내새끼같이 생각해주시는 분들입니다","제 상황에 맞는 취업 방향을 함께 고민해주시고"];
+  const hl = t => { let h = esc(t); HL.forEach(p => { const e = esc(p); h = h.split(e).join('<mark class="hl">' + e + '</mark>'); }); return h; };
+  old.remove(); const od = $('[data-qd]'); if (od) od.remove();
+  const cards = R.map((r, i) => `<article class="sc" data-i="${i}" aria-hidden="true"><header><span class="sav" style="background:${BGS[i % BGS.length]}"><svg viewBox="0 0 160 160"><g fill="${COL[i % COL.length]}">${BODY}${HAIR[i % HAIR.length]}</g></svg></span><span class="src src-${r.src}">${LOGO[r.src]}<b>${r.src === 'google' ? '구글' : '네이버 플레이스'}</b></span><em class="stk">실수강 후기</em></header><p>${hl(r.text)}</p></article>`).join('');
+  sec.insertAdjacentHTML('beforeend', `<div class="spot rv" id="spot"><div class="spstage">${cards}</div></div><div class="spn"><button type="button" class="spp" aria-label="이전 후기">‹</button><span class="spc"><b>1</b> / ${N}</span><button type="button" class="spx" aria-label="다음 후기">›</button></div>`);
+  const spot = $('#spot'), stage = $('.spstage', spot), cs = $$('.sc', spot), cnt = $('.spc b', sec);
+  let cur = 0, timer = 0, hold = false;
+  const lay = () => {
+    const W = stage.clientWidth, small = W < 700, cw = Math.min(460, W * (small ? .8 : .78)), step = cw * (small ? .66 : .68), vis = small ? 1 : 2;
+    cs.forEach((c, i) => {
+      let d = ((i - cur) % N + N) % N; if (d > N / 2) d -= N; const a = Math.abs(d);
+      c.style.width = cw + 'px'; c.style.marginLeft = (-cw / 2) + 'px';
+      c.style.transform = `translateX(${d * step}px) translateZ(${-a * 110}px) rotateY(${-d * 30}deg) scale(${d === 0 ? 1 : .94})`;
+      c.style.opacity = a > vis ? 0 : (a === 0 ? 1 : (.8 - (a - 1) * .35));
+      c.style.filter = a ? 'blur(' + (a * 1.1) + 'px)' : 'none'; c.style.zIndex = 20 - a; c.style.pointerEvents = a > vis ? 'none' : 'auto';
+      c.classList.toggle('on', d === 0); c.setAttribute('aria-hidden', d === 0 ? 'false' : 'true');
+      if (d === 0) $('p', c).scrollTop = 0;
     });
-    addEventListener('resize', fit); setTimeout(fit, 0); if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
-  }
+    cnt.textContent = cur + 1;
+  };
+  const go = n => { cur = ((n % N) + N) % N; lay(); auto(); };
+  const auto = () => { clearTimeout(timer); if (matchMedia('(prefers-reduced-motion: reduce)').matches) return; timer = setTimeout(() => { if (!hold && !document.hidden) cur = (cur + 1) % N, lay(); auto(); }, Math.min(22000, 6500 + R[cur].text.length * 26)); };
+  spot.addEventListener('click', e => { const c = e.target.closest('.sc'); if (c && !c.classList.contains('on')) go(+c.dataset.i); });
+  $('.spp', sec).onclick = () => go(cur - 1); $('.spx', sec).onclick = () => go(cur + 1);
+  spot.addEventListener('mouseenter', () => { hold = true; }); spot.addEventListener('mouseleave', () => { hold = false; });
+  let tx = 0; spot.addEventListener('touchstart', e => { tx = e.touches[0].clientX; hold = true; }, { passive: true });
+  spot.addEventListener('touchend', e => { const dx = e.changedTouches[0].clientX - tx; hold = false; if (Math.abs(dx) > 40) go(cur + (dx < 0 ? 1 : -1)); }, { passive: true });
+  addEventListener('resize', lay); lay(); if (document.fonts && document.fonts.ready) document.fonts.ready.then(lay); auto();
 })();
 FX.init(); S.init();
 /* 리뉴얼 팝업: 열리면 폭죽이 팡팡 터지고 색종이가 쏟아져요. (?nopop 이면 안 뜸 · ?popup 이면 '오늘 하루 보지 않기'여도 뜸) */
