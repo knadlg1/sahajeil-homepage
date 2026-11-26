@@ -391,25 +391,24 @@ mark{background:none;color:var(--pt);padding:0}
 .chapnav{position:fixed;left:26px;top:50%;transform:translateY(-50%);z-index:70;display:grid;gap:4px}
 .chapnav a{display:flex;align-items:center;gap:10px;font:800 13px var(--sans);color:var(--muted);padding:6px 0;transition:.3s}.chapnav a b{font:900 15px var(--sans);width:26px;transition:.3s}
 .chapnav a span{opacity:0;transform:translateX(-8px);transition:.3s;white-space:nowrap;font-weight:700}.chapnav a.on{color:var(--main)}.chapnav a.on b{color:var(--pt)}.chapnav a.on span,.chapnav a:hover span{opacity:1;transform:none}
-.chapnav::before{content:"";position:absolute;left:12px;top:6px;bottom:6px;width:1px;background:var(--line);z-index:-1}
-/* 첫 화면에서는 번호가 사진 위에 놓이므로 밝은 동그라미를 깔아 잘 보이게 */
-.chapnav a b{height:26px;line-height:26px;text-align:center;border-radius:50%}.chapnav:has(a[href="#c01"].on) a b{background:var(--card);box-shadow:0 4px 12px -6px rgba(31,42,34,.6)}.chapnav:has(a[href="#c01"].on) a:not(.on) b{color:var(--ink2)}
-@media (max-width:999px){.chapnav{display:none}}@media (min-width:1000px){.w{padding-left:74px}}.chapnav a.on span,.chapnav a:hover span{background:var(--card);padding:3px 10px;border-radius:99px;box-shadow:0 6px 16px -8px rgba(31,42,34,.4)}
+.chapnav::before{content:"";position:absolute;left:12px;top:6px;bottom:6px;width:1px;background:var(--line);z-index:-1}@media (max-width:999px){.chapnav{display:none}}@media (min-width:1000px){.w{padding-left:74px}}.chapnav a.on span,.chapnav a:hover span{background:var(--card);padding:3px 10px;border-radius:99px;box-shadow:0 6px 16px -8px rgba(31,42,34,.4)}
 /* 챕터 머리말: 큰 윤곽 숫자 */
 .chead{position:relative;padding-top:40px;margin-bottom:44px}.chno{position:absolute;left:-6px;top:-40px;font:900 clamp(110px,17vw,230px)/1 var(--sans);letter-spacing:-.08em;color:transparent;-webkit-text-stroke:1.5px color-mix(in srgb,var(--main) 38%,transparent);z-index:0;pointer-events:none}
 .chead>*:not(.chno){position:relative;z-index:1}.chead .h2{margin-top:14px}
 /* 포스터형 히어로 */
-.poster{display:grid;grid-template-columns:7fr 5fr;min-height:calc(100vh - 72px)}
-.pl{order:2;background:var(--main);color:#f5efe0;padding:56px clamp(24px,4vw,64px);display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+.poster{display:grid;grid-template-columns:5fr 7fr;min-height:calc(100vh - 72px)}
+.pl{background:var(--main);color:#f5efe0;padding:56px clamp(24px,4vw,64px);display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
 .pl .no1{font:900 clamp(120px,16vw,240px)/.8 var(--sans);letter-spacing:-.09em;color:transparent;-webkit-text-stroke:1.5px rgba(245,239,224,.4)}
 .pl h1{font:900 clamp(40px,4.8vw,72px)/1.12 var(--sans);letter-spacing:-.06em}.pl h1 .thin{font-weight:300;display:block;color:#e9c987}.pl .lead{color:rgba(245,239,224,.8);margin:18px 0 24px}.pl .cta-row{display:flex;gap:12px;flex-wrap:wrap}
 .pl .eb{font:700 12px var(--sans);letter-spacing:.26em;color:rgba(245,239,224,.7)}
+/* PC: 01 · 제목 · 설명 · 버튼 묶음은 초록 영역의 오른쪽에 (모바일은 아래 820px 규칙에서 원래대로) */
+.pl{padding-right:clamp(20px,1.8vw,36px)}.pl>.no1,.pl>.no1+div{width:min(100%,360px);margin-left:auto}
 .pr{position:relative;background:#3a2a1c;overflow:hidden}.pr [data-bgslides]{position:absolute;inset:0}.pr .hero-ctl{right:20px;bottom:20px;z-index:4}
 .chap{position:relative}
 .dark .chno{-webkit-text-stroke-color:rgba(245,239,224,.22)}.dark .h2{color:#f5efe0}
 .dark{background:var(--main-d)}
 .cflow{margin-top:20px}
-@media (max-width:820px){.poster{grid-template-columns:1fr;min-height:0}.pl{order:0;padding:34px 22px 30px;gap:24px}.pl .no1{font-size:110px}.pr{min-height:380px}.chno{font-size:110px;top:-20px}}
+@media (max-width:820px){.poster{grid-template-columns:1fr;min-height:0}.pl{padding:34px 22px 30px;gap:24px}.pl>.no1,.pl>.no1+div{width:auto;margin-left:0}.pl .no1{font-size:110px}.pr{min-height:380px}.chno{font-size:110px;top:-20px}}
 
 /* ============ 모바일 컴팩트 (스크롤 길이 · 글자 크기 줄임) ============ */
 @media (max-width:820px){
