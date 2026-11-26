@@ -809,6 +809,7 @@ mark{background:none;color:var(--pt);padding:0}
 .sc.on .hl{animation:hlsweep 1s .55s cubic-bezier(.2,.8,.2,1) both}
 @keyframes hlsweep{from{background-size:0 100%}to{background-size:100% 100%}}
 @media (prefers-reduced-motion:reduce){.sc.on .hl{animation:none}}
+.spn{gap:22px!important}
 
 </style></head>
 <body>
@@ -1369,8 +1370,8 @@ if (/[?&]nohdr/.test(location.search)) document.documentElement.classList.add("n
   const hl = t => { let h = esc(t); HL.forEach(p => { const e = esc(p); h = h.split(e).join('<mark class="hl">' + e + '</mark>'); }); return h; };
   old.remove(); const od = $('[data-qd]'); if (od) od.remove();
   const cards = R.map((r, i) => `<article class="sc" data-i="${i}" aria-hidden="true"><header><span class="sav" style="background:${BGS[i % BGS.length]}"><svg viewBox="0 0 160 160"><g fill="${COL[i % COL.length]}">${BODY}${HAIR[i % HAIR.length]}</g></svg></span><span class="src src-${r.src}">${LOGO[r.src]}<b>${r.src === 'google' ? '구글' : '네이버 플레이스'}</b></span><em class="stk">실수강 후기</em></header><p>${hl(r.text)}</p></article>`).join('');
-  sec.insertAdjacentHTML('beforeend', `<div class="spot rv" id="spot"><div class="spstage">${cards}</div></div><div class="spn"><button type="button" class="spp" aria-label="이전 후기">‹</button><span class="spc"><b>1</b> / ${N}</span><button type="button" class="spx" aria-label="다음 후기">›</button></div>`);
-  const spot = $('#spot'), stage = $('.spstage', spot), cs = $$('.sc', spot), cnt = $('.spc b', sec);
+  sec.insertAdjacentHTML('beforeend', `<div class="spot rv" id="spot"><div class="spstage">${cards}</div></div><div class="spn"><button type="button" class="spp" aria-label="이전 후기">‹</button><button type="button" class="spx" aria-label="다음 후기">›</button></div>`);
+  const spot = $('#spot'), stage = $('.spstage', spot), cs = $$('.sc', spot);
   let cur = 0, timer = 0, hold = false;
   const lay = () => {
     const W = stage.clientWidth, small = W < 700, cw = Math.min(460, W * (small ? .8 : .78)), step = cw * (small ? .66 : .68), vis = small ? 1 : 2;
@@ -1383,7 +1384,6 @@ if (/[?&]nohdr/.test(location.search)) document.documentElement.classList.add("n
       c.classList.toggle('on', d === 0); c.setAttribute('aria-hidden', d === 0 ? 'false' : 'true');
       if (d === 0) $('p', c).scrollTop = 0;
     });
-    cnt.textContent = cur + 1;
   };
   const go = n => { cur = ((n % N) + N) % N; lay(); auto(); };
   const auto = () => { clearTimeout(timer); if (matchMedia('(prefers-reduced-motion: reduce)').matches) return; timer = setTimeout(() => { if (!hold && !document.hidden) cur = (cur + 1) % N, lay(); auto(); }, Math.min(22000, 6500 + R[cur].text.length * 26)); };
