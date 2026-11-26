@@ -596,6 +596,40 @@ mark{background:none;color:var(--pt);padding:0}
 .ftr .f1{justify-content:center}.ftr p{text-align:center}
 
 
+/* 리뉴얼 팝업 — 폭죽 · 색종이 */
+.rnw{position:fixed;inset:0;z-index:200;display:grid;place-items:center;padding:16px;background:radial-gradient(ellipse at center,rgba(34,52,41,.78),rgba(14,24,18,.9));opacity:0;transition:opacity .35s}
+.rnw.on{opacity:1}
+.rnw-fx{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.rnw-card{position:relative;width:min(450px,100%);padding:38px 30px 20px;border-radius:28px;text-align:center;color:var(--ink,#1f2a22);background:linear-gradient(180deg,#fffaf0,#f6ecd6);border:2px solid #e3b95f;box-shadow:0 0 0 6px rgba(246,217,143,.25),0 30px 80px -20px rgba(0,0,0,.7);overflow:hidden;transform:scale(.4) rotate(-6deg);opacity:0}
+.rnw.on .rnw-card{animation:rnwcard .75s cubic-bezier(.2,1.5,.35,1) forwards}
+.rnw-card::after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.65),transparent);transform:skewX(-18deg);animation:rnwshine 3.2s 1s ease-in-out infinite;pointer-events:none}
+@keyframes rnwcard{to{transform:none;opacity:1}}
+@keyframes rnwshine{0%{left:-60%}45%,100%{left:130%}}
+.rnw-x{position:absolute;right:12px;top:8px;width:38px;height:38px;border:0;border-radius:50%;background:rgba(47,74,58,.08);color:#2f4a3a;font:400 26px/38px var(--sans);cursor:pointer;z-index:2}
+.rnw-x:hover{background:rgba(47,74,58,.16)}
+.rnw-badge{position:absolute;left:-14px;top:-14px;width:88px;height:88px;display:grid;place-items:center;background:#e8654a;color:#fff;clip-path:polygon(50% 0,61% 14%,78% 8%,81% 26%,98% 31%,89% 47%,100% 62%,83% 69%,82% 87%,64% 84%,50% 100%,38% 85%,20% 90%,18% 71%,0 64%,11% 48%,2% 31%,20% 27%,24% 9%,40% 15%);transform:rotate(-14deg) scale(0)}
+.rnw-badge b{font:900 17px var(--sans);letter-spacing:.02em;transform:translate(-3px,-2px) rotate(-6deg)}
+.rnw.on .rnw-badge{animation:rnwbadge .6s .7s cubic-bezier(.2,1.8,.4,1) forwards,rnwwob 2.4s 1.4s ease-in-out infinite}
+@keyframes rnwbadge{to{transform:rotate(-14deg) scale(1)}}@keyframes rnwwob{50%{transform:rotate(-8deg) scale(1.08)}}
+.rnw-kick{font:800 11px var(--sans);letter-spacing:.2em;color:#a8482f;margin-bottom:6px}
+.rnw-t{display:flex;justify-content:center;gap:2px;margin:4px 0 8px;font:900 clamp(40px,11vw,60px)/1.05 var(--sans);letter-spacing:-.02em}
+.rnw-t span{display:inline-block;opacity:0;color:#2f4a3a;text-shadow:0 3px 0 rgba(227,185,95,.55)}
+.rnw-t span:nth-child(3n+2){color:#a8482f}.rnw-t span:nth-child(3n){color:#c99a3a}
+.rnw.on .rnw-t span{animation:rnwl .7s calc(.35s + var(--i) * .07s) cubic-bezier(.2,1.8,.4,1) forwards}
+@keyframes rnwl{from{opacity:0;transform:translateY(46px) scale(.2) rotate(-24deg)}to{opacity:1;transform:none}}
+.rnw-s{font:600 19px/1.4 var(--sans);letter-spacing:-.03em}.rnw-s b{display:inline-block;margin-left:7px;font-weight:900;color:#a8482f;background:linear-gradient(transparent 62%,rgba(227,185,95,.6) 62%);padding:0 4px}
+.rnw-d{margin:12px 0 18px;font:500 15px/1.65 var(--sans);color:#5a5446}
+.rnw-cta{display:flex;gap:10px;justify-content:center}
+.rnw-kk,.rnw-go{display:inline-flex;align-items:center;justify-content:center;gap:7px;height:50px;padding:0 20px;border-radius:14px;font:800 15.5px var(--sans);text-decoration:none;cursor:pointer;border:0;transition:transform .2s}
+.rnw-kk{background:#fee500;color:#3a1d1d;flex:1.2}.rnw-kk svg{width:20px;height:20px}.rnw-go{background:#2f4a3a;color:#fff;flex:1}
+.rnw-kk:hover,.rnw-go:hover{transform:translateY(-2px)}
+.rnw-hide{margin:14px auto 0;display:block;border:0;background:none;color:#8a8372;font:500 12.5px var(--sans);text-decoration:underline;cursor:pointer}
+
+@media (prefers-reduced-motion:reduce){.rnw-card,.rnw-t span,.rnw-badge{animation:none!important;opacity:1;transform:none}.rnw-badge{transform:rotate(-14deg) scale(1)}.rnw-card::after{display:none}}
+/* Wix 임베드가 내용 길이만큼 길게 늘어난 경우(창 높이가 아주 큼): 가운데가 아니라 맨 위쪽 화면 안에 띄워요 */
+.rnw.rnw-tall{position:absolute;inset:0 0 auto 0;height:900px;align-items:start;padding-top:110px}
+
+
 </style></head>
 <body>
 <div id="app"></div>
@@ -1042,6 +1076,43 @@ if (/[?&]nohdr/.test(location.search)) document.documentElement.classList.add("n
   });
 })();
 FX.init(); S.init();
+/* 리뉴얼 팝업: 열리면 폭죽이 팡팡 터지고 색종이가 쏟아져요. (?nopop 이면 안 뜸 · ?popup 이면 '오늘 하루 보지 않기'여도 뜸) */
+(function () {
+  if (/[?&]nopop/.test(location.search)) return;
+  const KEY = 'sahaRenewalHide', today = new Date().toISOString().slice(0, 10);
+  let hid = false; try { hid = localStorage.getItem(KEY) === today; } catch (e) {}
+  if (hid && !/[?&]popup/.test(location.search)) return;
+  const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const el = document.createElement('div'); el.className = 'rnw' + (innerHeight > 1200 ? ' rnw-tall' : ''); el.setAttribute('role', 'dialog'); el.setAttribute('aria-modal', 'true'); el.setAttribute('aria-label', '리뉴얼 안내');
+  el.innerHTML = `<canvas class="rnw-fx" aria-hidden="true"></canvas><div class="rnw-card"><button type="button" class="rnw-x" aria-label="닫기">×</button><div class="rnw-badge" aria-hidden="true"><b>NEW</b></div><div class="rnw-kick">SAHA JEIL NURSING ACADEMY</div><h2 class="rnw-t" aria-label="리뉴얼">${'RENEWAL'.split('').map((c, i) => `<span style="--i:${i}">${c}</span>`).join('')}</h2><p class="rnw-s">사하제일간호학원<b>리뉴얼!</b></p><p class="rnw-d">새로운 공간, 새로운 시작<br>간호의 첫걸음을 함께해요</p><div class="rnw-cta"><a class="rnw-kk" href="${DATA.kakao}" target="_blank" rel="noopener">${IC_KK}카카오톡 상담</a><button type="button" class="rnw-go">둘러보기</button></div><button type="button" class="rnw-hide">오늘 하루 보지 않기</button></div>`;
+  document.body.appendChild(el);
+  const cv = el.querySelector('canvas'), ctx = cv.getContext('2d'), dpr = Math.min(2, window.devicePixelRatio || 1);
+  let W = 0, H = 0, run = true, next = 0; const P = [], C = [];
+  const COL = ['#f6d98f', '#e3b95f', '#ff8a65', '#e8654a', '#9fd3b0', '#ffffff', '#ffd54f', '#7fc8a9', '#f4a6c0'];
+  const rc = () => COL[Math.random() * COL.length | 0];
+  const size = () => { W = el.clientWidth; H = el.clientHeight; cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); };
+  const burst = (x, y) => { const c1 = rc(), c2 = rc(), n = 36 + (Math.random() * 18 | 0); for (let i = 0; i < n; i++) { const a = Math.PI * 2 * i / n + Math.random() * .15, sp = 2.2 + Math.random() * 3.4; P.push({ x, y, px: x, py: y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, l: 1, d: .011 + Math.random() * .01, c: i % 3 ? c1 : c2, r: 1.5 + Math.random() * 1.8 }); } };
+  const confetti = n => { for (let i = 0; i < n; i++) C.push({ x: Math.random() * W, y: -20 - Math.random() * H * .6, vx: (Math.random() - .5) * 1.3, vy: 1.6 + Math.random() * 2.6, w: 6 + Math.random() * 7, h: 3 + Math.random() * 5, r: Math.random() * 6, vr: (Math.random() - .5) * .3, c: rc() }); };
+  const frame = t => {
+    if (!run) return;
+    ctx.clearRect(0, 0, W, H);
+    if (t > next) { burst(W * (.1 + Math.random() * .8), H * (.1 + Math.random() * .55)); next = t + 330 + Math.random() * 450; }
+    for (let i = P.length - 1; i >= 0; i--) { const p = P[i]; p.px = p.x; p.py = p.y; p.vy += .05; p.vx *= .991; p.x += p.vx; p.y += p.vy; p.l -= p.d; if (p.l <= 0) { P.splice(i, 1); continue; } ctx.globalAlpha = Math.min(1, p.l * 1.4); ctx.strokeStyle = p.c; ctx.lineWidth = p.r; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(p.px, p.py); ctx.lineTo(p.x, p.y); ctx.stroke(); }
+    for (let i = C.length - 1; i >= 0; i--) { const q = C[i]; q.x += q.vx + Math.sin(q.r) * .6; q.y += q.vy; q.r += q.vr; if (q.y > H + 24) { if (run && C.length < 60) { q.y = -20; q.x = Math.random() * W; } else C.splice(i, 1); continue; } ctx.globalAlpha = .95; ctx.fillStyle = q.c; ctx.save(); ctx.translate(q.x, q.y); ctx.rotate(q.r); ctx.fillRect(-q.w / 2, -q.h / 2, q.w, q.h); ctx.restore(); }
+    ctx.globalAlpha = 1; requestAnimationFrame(frame);
+  };
+  const close = save => { if (save) try { localStorage.setItem(KEY, today); } catch (e) {} el.classList.remove('on'); setTimeout(() => { run = false; el.remove(); document.removeEventListener('keydown', esc); }, 380); };
+  const esc = e => { if (e.key === 'Escape') close(false); };
+  el.addEventListener('click', e => { if (e.target === el || e.target.closest('.rnw-x,.rnw-go')) close(false); else if (e.target.closest('.rnw-hide')) close(true); });
+  document.addEventListener('keydown', esc);
+  setTimeout(() => {
+    size(); addEventListener('resize', size); el.classList.add('on');
+    const x = el.querySelector('.rnw-x'); try { x.focus({ preventScroll: true }); } catch (e) {}
+    if (reduce) return;
+    confetti(110); burst(W * .22, H * .3); setTimeout(() => burst(W * .78, H * .26), 160); setTimeout(() => burst(W * .5, H * .16), 320);
+    requestAnimationFrame(frame);
+  }, 500);
+})();
 /* 인테리어 공사 안내: 인테리어 사진 자리(첫 화면 · 공간 둘러보기) 위에 손글씨로 '인테리어 중' — 공사가 끝나면 false 로 */
 const INTERIOR_NOTICE = true;
 if (INTERIOR_NOTICE) {
