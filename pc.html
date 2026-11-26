@@ -636,6 +636,19 @@ mark{background:none;color:var(--pt);padding:0}
 /* 아코디언용 .acc+.acc 여백이 두 번째 인증 카드를 아래로 밀어서 높이가 달라 보였어요 */
 .accs .acc,.accs .acc+.acc{margin-top:0;align-self:stretch;height:100%}
 
+/* 실제 구글 · 네이버 후기 — 긴 글 대응: 슬라이드를 한 칸에 겹쳐 가장 긴 것에 높이를 맞추고, 몇 줄만 보이게 */
+.qstage{display:grid;min-height:0}
+.qstage blockquote{grid-area:1/1;position:relative;inset:auto;display:block;padding:6px 0 10px}
+.qstage blockquote>p,.qstage blockquote>.qmore,.qstage blockquote>footer{position:relative;z-index:1}
+.qstage blockquote>p{font:400 19px/1.8 var(--sans);letter-spacing:-.02em;white-space:pre-line;max-width:880px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:6;overflow:hidden}
+.qstage blockquote.open>p{display:block;-webkit-line-clamp:unset;overflow:visible}
+.qmore{display:inline-block;margin:6px 0 0;padding:6px 14px;border:1px solid var(--line);border-radius:99px;background:rgba(255,255,255,.7);color:var(--main);font:700 13.5px var(--sans);cursor:pointer}
+.qmore:hover{background:#fff}.qmore[hidden]{display:none}
+.qstage blockquote>footer{margin-top:16px}
+.src{display:inline-flex;align-items:center;gap:8px;padding:6px 14px 6px 8px;border-radius:99px;background:#fff;border:1px solid var(--line);box-shadow:0 4px 12px -6px rgba(0,0,0,.25)}
+.src svg{width:22px;height:22px;flex:none}.src b{font:800 14px var(--sans);color:var(--ink,#1f2a22)}
+
+
 </style></head>
 <body>
 <div id="app"></div>
@@ -860,7 +873,7 @@ const S = {
   end: (cls = '') => `<section class="story end ${cls}" data-story><div class="story-bg"></div><div class="story-in"><p class="a">간호의 첫걸음,<br>지금 상담부터 시작하세요.</p><p class="b">자격증 취득과정 · 내일배움카드 · 국민취업지원제도 상담 가능</p><div class="cta-row">${C.kakao('btn-lg', '카카오톡 상담하기')}${C.tel('btn-lg')}</div></div></section>`,
   init() {
     const tr = $('[data-track]'); if (tr) { const step = () => Math.min(540, tr.clientWidth * .8); const p = $('[data-tprev]'), n = $('[data-tnext]'); if (p) p.onclick = () => tr.scrollBy({ left: -step(), behavior: 'smooth' }); if (n) n.onclick = () => tr.scrollBy({ left: step(), behavior: 'smooth' }); }
-    const qs = $$('[data-qs] blockquote'), qd = $$('[data-qd] button'); if (qs.length) { let k = 0, t; const go = n => { k = (n + qs.length) % qs.length; qs.forEach((q, i) => q.classList.toggle('on', i === k)); qd.forEach((d, i) => d.classList.toggle('on', i === k)); }; const auto = () => { clearInterval(t); t = setInterval(() => go(k + 1), 6500); }; $('[data-qd]').onclick = e => { const b = e.target.closest('button'); if (b) { go(+b.dataset.i); auto(); } }; auto(); }
+    const qs = $$('[data-qs] blockquote'), qd = $$('[data-qd] button'); if (qs.length) { let k = 0, t; const go = n => { k = (n + qs.length) % qs.length; qs.forEach((q, i) => q.classList.toggle('on', i === k)); qd.forEach((d, i) => d.classList.toggle('on', i === k)); }; const auto = () => { clearTimeout(t); const d = Math.min(22000, 6000 + qs[k].textContent.length * 28); t = setTimeout(() => { if (!$('[data-qs]').classList.contains('hold')) go(k + 1); auto(); }, d); }; $('[data-qd]').onclick = e => { const b = e.target.closest('button'); if (b) { go(+b.dataset.i); auto(); } }; auto(); }
   }
 };
 
@@ -997,6 +1010,35 @@ const FU_MAP = "<div class=\"mapbox\" data-mode=\"sub\" data-sel=\"0\"><div clas
 DATA.appHere = ['병원 실습기간 전용 어플', '나의 실습 현황을 한번에', '복잡한 서류 자동발급 가능'];
 DATA.appDino = ['시간표를 한 눈에', '과목별 강사 색으로 구분', '휴일확인도 간편하게!'];
 DATA.rates = { 2023: 86.3, 2024: 83, 2025: 83.6, 2026: 85.7 };
+/* 수강 후기: 실제 구글 · 네이버 리뷰 (src: google | naver) */
+DATA.reviews = [
+  { src: 'google', text: `아이들을 키우면서 병원에 자주 가게 되고 거기에서 만났었던 간호사님들을 보면서 잊고 있었던 꿈을 생각하게 되었습니다. 학원을 알아보려고 찾던 차에 늘 눈에 띄던 간판 사하제일간호를 먼저 찾아가게 되었습니다. 1년이라는 시간을 학원에서 거의 보내야 하는데 친절하게 맞아주시던 원장님과 상담을 하면서 고민도 하지 않고 그 자리에서 바로 신청을 하였습니다.
+시험을 앞두고 있는 지금 돌이켜보면 이론수업과 실습활동하면서 힘든 시기에 늘 따뜻한 어머니의 마음으로 보듬어주시고 헤아려주셨던 원장님, 그리고 시간이 언제 갔는지도 모르게 열정적으로 강의해주셨던 선생님들 덕분에 어느새 제 꿈이 바로 눈앞에 다가와 있을 수 있었습니다.
+수업시간이 너무 재미있어서 학원가는 즐거움을 주셨던 선생님들께 진심으로 감사의 마음을 전해드리고 싶습니다^^
+학원을 어디로 갈까 고민하고 계시다면 사하제일간호학원에서 시작하세요 강추합니다^^` },
+  { src: 'google', text: `1년이란 시간동안 너무 열심히했는데
+좋은결과 나와서 너무 뿌듯하고
+취업성공률 좋아서 갔는데 진짜 취업도 빨리되고
+원장님 신경 많이 써주시고 너무 만족합니다 ㅎㅎ
+열정적으로 가르쳐주시는 강사님들
+그리고 꼼꼼하신 원장님 덕분이 큽니다
+정말 감사드리고 추천 많이 할게요 ♡♡♡` },
+  { src: 'google', text: `40대 후반, 앞으로의 노후를 생각하며 오래도록 할 수 있는 일을 고민하다 간호조무사에 도전하게 되었습니다. 새로운 시작이라 걱정도 많았지만, 원장님과 상담하며 현실적인 조언을 듣고 앞으로의 방향을 잡을 수 있었습니다.
+1년 동안 강사 선생님들께서 핵심을 콕콕 짚어주시고 이해하기 쉽게 가르쳐주셔서 어려운 내용도 잘 배울 수 있었습니다. 현장실습도 제 상황과 취업 방향에 맞게 추천해주셔서 많은 도움이 되었습니다.
+합격 후에는 어떤 곳으로 취업해야 할지 고민이 많았는데, 원장님께서 제 상황에 맞는 취업 방향을 함께 고민해주시고 이력서와 면접 준비에도 도움을 주셨습니다. 특히 면접을 앞두고 해주신 조언과 응원이 큰 힘이 되었고, 덕분에 면접에서도 자신감을 갖고 임할 수 있었습니다. 여러 도움을 받은 덕분에 합격 후 오래 기다리지 않고 취업까지 할 수 있었습니다.` },
+  { src: 'google', text: `처음에는 자격증을 따고 취업까지 할 수 있을지 고민과, 걱정이 많았는데 기초부터 꼼꼼하게 알려 주셔서 잘 준비할 수 있었고 훌륭한 교과 담당 선생님과 늘 학원생입장에서 생각해주시고 챙겨주신 원장님, 부원장님 덕분에 자격증 취득과 취업까지 할 수 있어서 정말 만족합니다.!! 도전하고 싶으신 분들에게 사하제일간호학원 추천.추천 합니다~^^선생님들께 감사합니다.
+원장선생님 믿고 등록하셔도 됩니다^^♡` },
+  { src: 'naver', text: `처음에 상담하러 왔을때 여러학원 상담을 해봤는데 정확히 얘기해주는게 좋아서 오게 되었어요~~
+학원 다니는 동안 실습하는 동안 조율도 잘 해주시고해서 잘 마무리 할 수 있을 거 같아요
+아는 지인들도 하게 되면 이곳에 오라고 추천중입니다~!!!` },
+  { src: 'naver', text: `친구3명이 여기서 공부하고 합격했고,선생님들 잘가르친다고 추천해서 등록하게됐어요. 퇴근하고 야간반듣는게 너무피곤하고 힘들었지만 선생님께서 포기하지말라고 꽉 잡아주셔서 무사히 이론실습마치고 합격할수있었어요~!!!!
+실습도 쉽지않았지만 ㅜ 1년 . . . 생각보다 금방갑니다. 올3월 시험쳤고 지금은 정형외과의원에서 일하고있어요. 아이낳고 30후반인데 취업할수있어 감사하죠 ㅜㅜ` },
+  { src: 'naver', text: `수강 등록 후 얼마 지나지 않아 개인적인 사정으로 아쉽게 그만두게 되었습니다.
+상황이 괜찮아지면 다시 등록해서 꼭 수료하고 싶을 만큼 만족스러웠습니다
+원장님께서 항상 친절하게 대해주시고 수강생들의 작은 불편사항도 놓치지 않고 귀 기울여 개선하려고 노력하시는 모습이 인상 깊었습니다
+수강생을 진심으로 생각해주시는 학원이라는 느낌을 받았습니다` },
+  { src: 'naver', text: `간호조무사 과정이 생각보다 길고 힘들어서 중도 포기를 심각하게 고민했었습니다. 그럴 때마다 학원 선생님들께서 포기하지 않도록 멘탈 관리도 잘 도와주시고, 끝까지 완주할 수 있게 큰 힘이 되어주셨습니다. 선생님들의 열정적인 강의와 따뜻한 관심 덕분에 무사히 자격증을 취득할 수 있었습니다. 장기 과정이라 망설이시는 분들께도 이 학원 선생님들을 믿고 도전해 보라고 강력 추천하고 싶습니다.` }
+].map(r => ({ name: '', course: '', sample: false, ...r }));
 /* 제출 서류 · 무료 혜택 문구 정리 */
 DATA.docs = DATA.docs.filter(d => d !== '입학원서');
 DATA.free = DATA.free.map(f => f === '이론 보강 무료 30시간' ? '이론 보강 <b class="hl30">30시간 무료</b> 제공' : f);
@@ -1080,11 +1122,35 @@ if (/[?&]nohdr/.test(location.search)) document.documentElement.classList.add("n
     { bg: '#ece3d1', fg: '#6b4a2b', hair: '<path d="M52 70C48 38 112 38 108 70C104 56 96 51 80 51C64 51 56 56 52 70Z"/><path d="M104 58C134 54 140 98 120 112C128 86 118 72 104 70Z"/>' }, // 포니테일
     { bg: '#dfeadf', fg: '#3d5f4a', hair: '<path d="M49 84C42 34 118 34 111 84L109 100C100 90 60 90 51 100Z"/>' },                                                        // 단발
     { bg: '#f6e8c9', fg: '#a8482f', hair: '<circle cx="56" cy="52" r="14"/><circle cx="70" cy="40" r="15"/><circle cx="90" cy="39" r="15"/><circle cx="106" cy="50" r="14"/><circle cx="50" cy="70" r="12"/><circle cx="110" cy="70" r="12"/>' } // 곱슬
+    , { bg: '#e4efe6', fg: '#6b4a2b', hair: '<path d="M54 66C52 42 108 42 106 66C100 56 60 56 54 66Z"/>' }                                                                          // 아주 짧은 머리
+    , { bg: '#f4ddd3', fg: '#3d5f4a', hair: '<circle cx="80" cy="33" r="10"/><path d="M50 84C42 34 118 34 110 84C104 56 96 50 80 50C64 50 56 56 50 84Z"/>' }          // 반묶음
   ];
+  /* 후기 출처 표시: 구글 · 네이버 로고 */
+  const LOGO = {
+    google: '<svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>',
+    naver: '<svg viewBox="0 0 48 48" aria-hidden="true"><rect width="48" height="48" rx="10" fill="#03C75A"/><path fill="#fff" d="M14 12h7.2l6.6 9.7V12H34v24h-7.2l-6.6-9.7V36H14z"/></svg>'
+  };
   $$('.qstage blockquote').forEach((b, i) => {
-    const a = AV[i % AV.length];
+    const a = AV[i % AV.length], r = DATA.reviews[i] || {};
     b.insertAdjacentHTML('afterbegin', `<div class="qav" aria-hidden="true" style="color:${a.fg}"><svg viewBox="0 0 160 160"><g class="fig" fill="currentColor" opacity=".16">${BODY}${a.hair}</g></svg></div>`);
+    if (r.src) b.querySelector('footer').innerHTML = `<span class="src src-${r.src}">${LOGO[r.src]}<b>${r.src === 'google' ? '구글 리뷰' : '네이버 리뷰'}</b></span>`;
   });
+  /* 긴 후기는 몇 줄만 보여 주고 '더보기'로 펼쳐요 (펼치면 자동 넘김 잠시 멈춤) */
+  const stage = $('[data-qs]');
+  const fit = () => $$('.qstage blockquote > p').forEach(p => {
+    const b = p.parentElement; let btn = $('.qmore', b);
+    const was = b.classList.contains('open'); b.classList.remove('open');
+    const over = p.scrollHeight > p.clientHeight + 2; if (was) b.classList.add('open');
+    if (over && !btn) { btn = document.createElement('button'); btn.type = 'button'; btn.className = 'qmore'; btn.textContent = '더보기 ▾'; p.after(btn); }
+    if (btn) btn.hidden = !over && !was;
+  });
+  if (stage) {
+    stage.addEventListener('click', e => {
+      const m = e.target.closest('.qmore'); if (!m) return; const b = m.parentElement, open = b.classList.toggle('open');
+      m.textContent = open ? '접기 ▴' : '더보기 ▾'; stage.classList.toggle('hold', !!$('.qstage blockquote.open'));
+    });
+    addEventListener('resize', fit); setTimeout(fit, 0); if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+  }
 })();
 FX.init(); S.init();
 /* 리뉴얼 팝업: 열리면 폭죽이 팡팡 터지고 색종이가 쏟아져요. (?nopop 이면 안 뜸 · ?popup 이면 '오늘 하루 보지 않기'여도 뜸) */
