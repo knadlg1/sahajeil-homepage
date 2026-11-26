@@ -323,6 +323,21 @@ mark{background:none;color:var(--pt);padding:0}
 .tcall .hbt svg{width:20px;height:20px;flex:none}
 
 
+/* 단계 넘기기: 옆으로 밀기(스와이프) */
+.tut-main{touch-action:pan-y;cursor:grab;user-select:none;-webkit-user-select:none;will-change:transform}.tut-main:active{cursor:grabbing}.tut-main img{-webkit-user-drag:none;user-drag:none}
+.tut-main.stp-next{animation:tutR .5s cubic-bezier(.2,.8,.25,1)}.tut-main.stp-prev{animation:tutL .5s cubic-bezier(.2,.8,.25,1)}.tut-main.stp-fade{animation:tutin .45s cubic-bezier(.2,.8,.25,1)}
+@keyframes tutR{from{opacity:0;transform:translateX(80px)}to{opacity:1;transform:none}}@keyframes tutL{from{opacity:0;transform:translateX(-80px)}to{opacity:1;transform:none}}
+.tdots span{cursor:pointer}.tdots span:hover{filter:brightness(.9)}
+#tutbox:focus{outline:none}#tutbox:focus-visible{outline:3px solid rgba(184,137,63,.5);outline-offset:3px}
+.tswipe{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:16px;padding-top:14px;border-top:1px solid var(--line);font:800 15px var(--sans);color:var(--main)}
+.tfing{display:inline-block;font-size:22px;animation:tfing 1.8s ease-in-out infinite}
+@keyframes tfing{0%,100%{transform:translateX(-16px) rotate(-12deg)}50%{transform:translateX(16px) rotate(10deg)}}
+.tarr{color:var(--acc);letter-spacing:-2px;font-weight:900;animation:tarr 1.2s ease-in-out infinite}@keyframes tarr{50%{transform:translateX(6px);opacity:.5}}
+.trs{border:1.5px solid var(--main);border-radius:99px;background:#fff;color:var(--main);font:800 14.5px var(--sans);padding:11px 22px;cursor:pointer;transition:background .2s,color .2s}.trs:hover{background:var(--main);color:#fff}
+
+@media (prefers-reduced-motion:reduce){.tfing,.tarr{animation:none}}
+.tfing{margin-right:14px}@keyframes tfing{0%,100%{transform:translateX(-8px) rotate(-12deg)}50%{transform:translateX(8px) rotate(10deg)}}
+
 /* ===== C-5 · 챕터형 스토리 =====
    C 시안을 "책의 챕터"처럼: 01 공간 → 02 과정 → 03 앱 → 04 취업 → 05 후기 → 06 안내 → 07 오시는 길.
    왼쪽에 챕터 번호 내비게이션(PC)이 따라다니며 지금 읽는 장을 알려 줍니다. 색: 샌드 + 포레스트 그린 + 황동 */
@@ -1000,35 +1015,51 @@ function tutInfo(anim) {
   return `<svg class="tsvg info" viewBox="0 0 300 262" role="img" aria-label="개별 정보를 입력하고 진행합니다" font-family="Noto Sans KR,Apple SD Gothic Neo,Malgun Gothic,sans-serif">${S.join('')}</svg>`;
 }
 const tutSection = () => `<section class="sec chap tutsec" id="card" data-bgfx style="--tint:var(--main-s)"><div class="w">${chead('06', 'CHAPTER 06 · CARD GUIDE', '내일배움카드 <b>따라서 신청하기</b>')}
-  <p class="tlead rv">화면을 그대로 보면서 빨간 표시를 따라 눌러 보세요. 손가락·마우스가 눌러야 할 곳을 하나씩 알려드려요.</p>
+  <p class="tlead rv">화면을 그대로 보면서 빨간 표시를 따라 해 보세요. 화면을 옆으로 밀면(PC는 마우스로 끌면) 다음 단계로 넘어가요.</p>
   <div class="tutbox rv" id="tutbox"></div></div></section>`;
 const tutRender = (anim) => {
   const box = document.getElementById('tutbox'); if (!box) return;
   if (!TUT.env) TUT.env = (window.WIX_MODE ? window.WIX_MODE === 'mobile' : innerWidth <= 820) ? 'mo' : 'pc';
-  const L = tutList(TUT.env), n = L.length, s = L[TUT.i];
-  let dots = ''; for (let d = 0; d < n; d++) dots += `<span class="${d === TUT.i ? 'on' : d < TUT.i ? 'dn' : ''}"></span>`;
+  const L = tutList(TUT.env), n = L.length, s = L[TUT.i], last = TUT.i === n - 1;
+  let dots = ''; for (let d = 0; d < n; d++) dots += `<span data-to="${d}" class="${d === TUT.i ? 'on' : d < TUT.i ? 'dn' : ''}"></span>`;
   const stage = s.k === 'h' ? tutInfo(TUT.env === 'pc') : tutShot(s.k);
   const desc = s.raw ? s.d : `<p>${s.d}</p>`;
   const link = s.app ? `<a class="tlnk" href="https://m.work24.go.kr/cm/main.do" target="_blank" rel="noopener"><img src="${TUT_W24APP}" alt="">고용24 바로가기</a>` : s.link ? '<a class="tlnk" href="https://www.work24.go.kr" target="_blank" rel="noopener">고용24 열기</a>' : '';
   const help = s.help ? `<div class="tcall"><p>지금부터 복잡해요, 막히면 학원이 같이 도와드릴게요</p><div class="tcb"><a class="hbt kk" href="${DATA.kakao}" target="_blank" rel="noopener">${IC_KK}카톡으로 물어보기</a><a class="hbt tel" href="${DATA.telHref}">${IC_TEL}전화하기</a></div></div>` : '';
-  box.innerHTML = `<div class="tut-top"><div class="tseg" role="group" aria-label="화면 종류"><button type="button" data-env="mo" class="${TUT.env === 'mo' ? 'on' : ''}" aria-pressed="${TUT.env === 'mo'}">모바일</button><button type="button" data-env="pc" class="${TUT.env === 'pc' ? 'on' : ''}" aria-pressed="${TUT.env === 'pc'}">PC</button></div><div class="tdots" aria-hidden="true">${dots}</div><span class="tcnt">${TUT.i + 1} <em>/ ${n}</em></span></div>
-  <div class="tut-main${anim ? ' stp' : ''}"><div class="tstage">${stage}</div><div class="tinfo"><span class="tkick">STEP ${String(TUT.i + 1).padStart(2, '0')}</span><h3 class="tstep">${s.t}</h3><div class="tdesc">${desc}</div>${link}${help}</div></div>
-  <div class="tft"><button type="button" class="tb" data-go="-1"${TUT.i === 0 ? ' disabled' : ''}>이전</button>${TUT.i === n - 1 ? '<button type="button" class="tb pri" data-go="restart">처음부터 다시 보기</button>' : '<button type="button" class="tb pri" data-go="1">다음</button>'}</div>`;
+  const hint = last ? '<button type="button" class="trs" data-go="restart">↺ 처음부터 다시 보기</button>' : `<span class="tfing" aria-hidden="true">👆</span><span class="thtx">${TUT.i === 0 ? '화면을 옆으로 밀어서 다음 단계로' : '옆으로 밀면 다음 단계예요'}</span><span class="tarr" aria-hidden="true">›››</span>`;
+  box.innerHTML = `<div class="tut-top"><div class="tseg" role="group" aria-label="화면 종류"><button type="button" data-env="mo" class="${TUT.env === 'mo' ? 'on' : ''}" aria-pressed="${TUT.env === 'mo'}">모바일</button><button type="button" data-env="pc" class="${TUT.env === 'pc' ? 'on' : ''}" aria-pressed="${TUT.env === 'pc'}">PC</button></div><div class="tdots" role="presentation">${dots}</div><span class="tcnt">${TUT.i + 1} <em>/ ${n}</em></span></div>
+  <div class="tut-main${anim ? ' stp-' + anim : ''}"><div class="tstage">${stage}</div><div class="tinfo"><span class="tkick">STEP ${String(TUT.i + 1).padStart(2, '0')}</span><h3 class="tstep">${s.t}</h3><div class="tdesc">${desc}</div>${link}${help}</div></div>
+  <div class="tswipe">${hint}</div>`;
 };
+const tutGo = (i, dir) => { const n = tutList(TUT.env).length; if (i < 0 || i >= n || i === TUT.i) return false; TUT.i = i; tutRender(dir || 'fade'); return true; };
 const tutInit = () => {
   const box = document.getElementById('tutbox'); if (!box) return;
-  tutRender(false);
+  box.tabIndex = 0; tutRender(false);
   box.addEventListener('click', e => {
-    const eb = e.target.closest('[data-env]'), gb = e.target.closest('[data-go]');
+    const eb = e.target.closest('[data-env]'), to = e.target.closest('[data-to]'), rs = e.target.closest('[data-go]');
     if (eb) {
       const env = eb.dataset.env; if (env === TUT.env) return;
       const k = tutList(TUT.env)[TUT.i].o, L = tutList(env); let j = 0; while (j < L.length - 1 && L[j].o < k) j++;
-      TUT.env = env; TUT.i = j; tutRender(true);
-    } else if (gb) {
-      const g = gb.dataset.go, n = tutList(TUT.env).length;
-      TUT.i = g === 'restart' ? 0 : Math.max(0, Math.min(n - 1, TUT.i + Number(g))); tutRender(true);
-    }
+      TUT.env = env; TUT.i = j; tutRender('fade');
+    } else if (to) { const t = +to.dataset.to; tutGo(t, t > TUT.i ? 'next' : 'prev'); }
+    else if (rs) { TUT.i = 0; tutRender('prev'); }
   });
+  box.addEventListener('keydown', e => { if (e.key === 'ArrowRight') tutGo(TUT.i + 1, 'next'); else if (e.key === 'ArrowLeft') tutGo(TUT.i - 1, 'prev'); });
+  box.addEventListener('dragstart', e => e.preventDefault());
+  /* 옆으로 밀기(터치) · 끌기(마우스)로 단계 넘기기 */
+  let el = null, sx = 0, sy = 0, dx = 0, drag = false, locked = false;
+  const snap = () => { if (!el) return; el.style.transition = 'transform .3s,opacity .3s'; el.style.transform = ''; el.style.opacity = ''; };
+  box.addEventListener('pointerdown', e => {
+    const m = e.target.closest('.tut-main'); if (!m || e.target.closest('a,button') || (e.pointerType === 'mouse' && e.button !== 0)) return;
+    el = m; sx = e.clientX; sy = e.clientY; dx = 0; drag = true; locked = false; el.style.transition = 'none';
+  });
+  box.addEventListener('pointermove', e => {
+    if (!drag || !el) return; dx = e.clientX - sx; const dy = e.clientY - sy;
+    if (!locked) { if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 8) { drag = false; snap(); return; } if (Math.abs(dx) > 8) { locked = true; try { el.setPointerCapture(e.pointerId); } catch (x) {} } }
+    if (locked) { const n = tutList(TUT.env).length, edge = (TUT.i === 0 && dx > 0) || (TUT.i === n - 1 && dx < 0); el.style.transform = 'translateX(' + (edge ? dx * .22 : dx * .6) + 'px)'; el.style.opacity = String(1 - Math.min(.5, Math.abs(dx) / 480)); }
+  });
+  const end = () => { if (!drag) return; drag = false; if (locked && Math.abs(dx) > 55) { const dir = dx < 0 ? 1 : -1; if (!tutGo(TUT.i + dir, dir > 0 ? 'next' : 'prev')) snap(); } else snap(); };
+  box.addEventListener('pointerup', end); box.addEventListener('pointercancel', end);
 };
 
 /* C-5 · 챕터형 스토리 — 구성 순서 (왼쪽 챕터 내비가 따라다님)
