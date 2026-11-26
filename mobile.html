@@ -1185,6 +1185,9 @@ ${tutSection()}${S.guide('tabs')}${mapSection()}${S.end()}
   act.after(apps);
 })();
 tutInit();
+/* 취업률 그래프: 60% 아래 구간을 생략해서 막대 높이 차이가 크게 보이게 (숫자 라벨은 그대로) */
+$$('[data-bars] .col:not(.empty)').forEach(c => { const v = parseFloat((($('em', c) || {}).textContent || '').replace('%', '')); if (v) c.dataset.h = Math.max(6, (v - 60) / 40 * 100).toFixed(1); });
+{ const f = $('.chartbox .fine'); if (f) f.innerHTML += ' 막대 높이는 비교를 쉽게 하려고 60% 이하 구간을 생략해 표시했습니다.'; }
 if (/[?&]nohdr/.test(location.search)) document.documentElement.classList.add("nohdr");   /* Wix 에서 상단바를 따로 고정할 때: ?nohdr=1 */
 /* 후기마다 다른 사람 그림자(실루엣) — 슬라이드가 켜질 때 떠오르는 애니메이션 */
 (function () {
